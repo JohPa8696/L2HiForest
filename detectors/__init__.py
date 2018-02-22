@@ -1,0 +1,2 @@
+
+from spectralhashing import SH
