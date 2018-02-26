@@ -28,7 +28,11 @@ for num_bits in code_len:
     # Train classifer
     classifier.fit(X)
     # Compress data
-    print num_bits
+    # classifier.get_binary_code(X)
+    # for x in x:
+        # classifier.get_binary_code(x)
+
+
 
 
 

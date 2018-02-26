@@ -49,16 +49,41 @@ class SH:
         modes = np.asarray(np.ones([int(nModes),num_slice]))
         m = 0
         for i in range(num_slice):
-            modes[(m+1): (m + maxMode(i) - 1), i] = range(2 ,maxMode(i))
-            m = m + maxMode(i) - 1;
+            modes[int(m+1):int(m + maxMode[0,i]-1), int(i)] = range(2, int(maxMode[0,i]))
+            m = m + maxMode[0,i] - 1
         print maxMode
 
-        # modes = modes - 1;
-        # omega0 = np.pi ./R;
-        # omegas = modes. * repmat(omega0, [nModes 1]);
-        # eigVal = -sum(omegas. ^ 2, 2);
-        # [yy, ii] = sort(-eigVal);
-        # modes = modes(ii(2:nbits + 1),:);
+        modes = modes - 1
+        omega0 = np.pi/R
+        rmat = np.tile(omega0,(int(nModes), 1))
+        print rmat
+        omegas = modes.dot(np.tile(omega0,(int(nModes), 1)).T)
+        eigVal = -1 * np.sum(omegas^ 2, 2);
+        [yy, ii] = np.sort(eigVal);
+        modes = modes[ii[2: self.num_bits + 1],:]
 
-    # def get_code(self, data_point):
+        # Assign parameters
+        self.eigenvectors = eig_vectors
+        self.min_n = min_n
+        self.max_n = max_n
+        self.modes = modes
+
+    # This function converts data point into binary codes
+    def get_binary_code(self, data):
+        num_instances = len(data)
+        num_features = len(data[0])
+
+        projections = np.matrix(data).dot(np.matrix(self.eigenvectors).T)
+
+        datax = projections - np.tile(self.min_n,(num_instances,1))
+        omega0 = np.pi/(self.max_n -self.min_n)
+        omegas = self.modes.dot(np.tile(omega0,(self.num_bits,1)))
+
+        U = np.zeros([num_instances,self.num_bits])
+
+        for i in range(self.num_bits):
+            omegai = np.tile(omegas[i,:], (num_instances, 1))
+            ys = np.sin(np.matrix(data).dot(omegai) + np.pi/2)
+            yi
+
 
