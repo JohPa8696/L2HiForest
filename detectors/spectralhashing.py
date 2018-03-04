@@ -105,6 +105,9 @@ class SH:
                     binaryCodes[i,j] = 0
         return binaryCodes
 
+    # Function to convert a single instance into binary code
+    # def get_hash_value(self, data_instance):
+
     def get_compact_code(self, binary_codes):
         num_instances = len(binary_codes)
         num_words = math.ceil(self.num_bits/8.0)
