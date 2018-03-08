@@ -2,6 +2,7 @@
 # Spectral hashing implementation
 
 import numpy as np
+from sklearn.metrics import roc_auc_score
 import pandas as pd
 from detectors import SH
 from detectors import L2HTree
@@ -26,21 +27,18 @@ code_len = [ 16, 32, 64]
 
 num_tree = 100
 classifiers = [("Spectral Hashing", L2HForest(num_tree, SH(16)))]
-for num_bits in code_len:
+for i, (clf_name, clf) in enumerate(classifiers):
     # Initialize classifier
-    print("Spectral Hashing:")
-    print "Number of Bits" + str(num_bits)
-    classifier = SH(num_bits)
+    print "	" + clf_name + ":"
+    # print "Number of Bits" + str(num_bits)
     # Train classifer
-    classifier.fit(X)
+    clf.fit(X)
+    binaryCodes = clf.get_binary_codes()
+    # Pred
+    y_pred = clf.decision_function(binaryCodes).ravel()
     # Compress data
-    binaryCodes = classifier.get_hash_value(X)
-    compactCode = classifier.get_compact_code(binaryCodes)
-    tree = L2HTree(classifier)
-    partitions = tree.build(binaryCodes)
-    tree.display()
-    for r in binaryCodes:
-        print tree.predict(r)
+    auc = roc_auc_score(ground_truth, y_pred)
+    print "AUC:	", auc
 
 
 

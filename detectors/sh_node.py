@@ -1,9 +1,10 @@
 class SHNode:
-    def __init__(self, data_size=0, children={}, children_count={}):
+    def __init__(self, data_size=0, children={}, children_count={}, index=-1):
         # self._data = data
         self._data_size = data_size
         self._children = children
         self._children_count = children_count
+        self._index = index
 
     def display(self):
         # print self._data
@@ -19,3 +20,6 @@ class SHNode:
 
     def get_children_count(self):
         return self._children_count
+
+    def get_index(self):
+        return self._index

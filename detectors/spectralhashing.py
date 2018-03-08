@@ -24,11 +24,12 @@ class SH:
         if num_slice < num_features:
             selected_eig_vals = eig_vals.argsort()[-1*num_slice:][::-1]
             # print " Indexes of " + str(num_slice) + " largest eigenval"
-            # print selected_eig_vals
+            # print selected_eig_valsS
             eig_vectors = np.asarray(eig_vectors)[selected_eig_vals]
             # print " Corresponding eigenvectors"
             # print np.matrix(eig_vectors).T
-        projected_data = np.matrix(data) * (-1 * eig_vectors)
+        # print eig_vectors.T
+        projected_data = np.matrix(data) * (-1 *( eig_vectors.T))
 
         # 2) Fit uniform distribution
         ## This will give the most outer and inner points after projections.
@@ -79,7 +80,7 @@ class SH:
         num_instances = len(data)
         num_features = len(data[0])
 
-        projections = np.matrix(data) * (-1 * self.eig_vectors)
+        projections = np.matrix(data) * (-1 * self.eig_vectors.T)
 
         data = projections - np.tile(self.min_n,(num_instances,1))
         omega0 = np.pi/(self.max_n -self.min_n)
