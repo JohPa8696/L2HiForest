@@ -120,7 +120,7 @@ class SH:
             binaryChunks = [binaryStr[ind:ind + 8] for ind in range(0, len(binaryStr), 8)]
             for j in range(len(binaryChunks)):
                 compact_codes[i,j] = int(binaryChunks[j], 2)
-        return np.flip(compact_codes,axis=1)
+        return np.flip(compact_codes, axis=1)
 
 
 

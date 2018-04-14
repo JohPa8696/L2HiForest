@@ -6,7 +6,8 @@ import sh_tree as shtree
 
 class L2HForest:
 
-    def __init__(self, num_trees, algo):
+    def __init__(self, sampler, num_trees, algo):
+        self._sampler = sampler
         self._num_trees = num_trees
         self._algo = algo
         self._trees = []
@@ -15,11 +16,18 @@ class L2HForest:
         self.build(data)
 
     def build(self, data):
-        self._algo.fit(data)
-        self._binaryCodes = self._algo.get_hash_value(data)
-        self._compactCodes = self._algo.get_compact_code(self._binaryCodes)
 
+        # Sampling data
+        self._sampler.fit(data)
+        sampled_datas = self._sampler.draw_samples(data)  # Sampler draws 't' sample data from the dataset for 't' tree
+
+        # Build trees
         for i in range(self._num_trees):
+            sampled_data = sampled_datas[i]
+            self._algo.fit(sampled_data)
+            self._binaryCodes = self._algo.get_hash_value(data)
+            # Compress by converting binary code to decimal
+            self._compactCodes = self._algo.get_compact_code(self._binaryCodes)
             tree = shtree.L2HTree(self._algo)
             tree.build(self._binaryCodes)
             self._trees.append(tree)

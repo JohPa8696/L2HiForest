@@ -7,6 +7,8 @@ import pandas as pd
 from detectors import SH
 from detectors import L2HTree
 from detectors import L2HForest
+from detectors import VSSampling
+
 # 1) Prepare the data
 # ---------------------
 # A ) load data from csv
@@ -20,18 +22,20 @@ ground_truth = input_data.as_matrix()[:, -1].tolist()
 num_instances = len(X)
 num_features = len(X[0])
 
+# number of samplers
+num_ensemblers = 100
 # 2) Train spectral hashing
 # -------------------------
 # Using a different number of bits for encoding
-code_len = [ 16, 32, 64]
+code_len = [16, 32, 64]
 
 num_tree = 100
-classifiers = [("Spectral Hashing", L2HForest(num_tree, SH(16)))]
+classifiers = [("Spectral Hashing", L2HForest(VSSampling(num_ensemblers), num_tree, SH(code_len[0])))]
 for i, (clf_name, clf) in enumerate(classifiers):
     # Initialize classifier
     print "	" + clf_name + ":"
     # print "Number of Bits" + str(num_bits)
-    # Train classifer
+    # Train classifier
     clf.fit(X)
     binaryCodes = clf.get_binary_codes()
     # Pred

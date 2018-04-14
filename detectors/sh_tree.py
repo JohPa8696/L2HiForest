@@ -4,8 +4,9 @@ import sh_node as shnode
 
 class L2HTree:
 
-    def __init__(self, algo):
+    def __init__(self, algo, rand_branching_factor = [1,2] ):
         self.algo = algo
+        self._rand_branching_factor = rand_branching_factor
 
     def build(self, data):
         self._num_samples = len(data)
@@ -13,28 +14,28 @@ class L2HTree:
         self._branch_factor = self._get_avg_branch_factor()
         self._reference_path_length = self.get_random_path_length_symmetric(self._num_samples)
 
-    def _recursive_build(self,data, bit_index = 0):
+    def _recursive_build(self, data, bit_index = 0):
         num_samples = len(data)
         if num_samples == 0:
             return None
         if num_samples == 1:
-            return shnode.SHNode(num_samples,{},{}, bit_index )
+            return shnode.SHNode(num_samples,{},{}, bit_index)
         else:
             num_bits = len(data[0])
             if bit_index >= num_bits:
                 return None
             # Select a random number of bits to split, this is to introduce variations to the trees
             # And subsequently, increase the robustness
-            rand_bits = np.random.choice([1,2])
+            rand_bits = np.random.choice(self._rand_branching_factor)
             cur_index = bit_index
             partition = self._split_data(data, rand_bits, cur_index)
             cur_index += rand_bits
             while len(partition) == 1 and cur_index < num_bits:
-                rand_bits = np.random.choice([1, 2])
+                rand_bits = np.random.choice(self._rand_branching_factor)
                 partition = self._split_data(data,rand_bits,cur_index)
                 cur_index += rand_bits
             if cur_index >= num_bits:
-               return shnode.SHNode(len(data) ,{}, {}, cur_index - rand_bits)
+               return shnode.SHNode(len(data),{}, {}, cur_index - rand_bits)
             children_count = {}
             for key in partition.keys():
                 children_count[key] = len(partition.get(key))
@@ -46,7 +47,7 @@ class L2HTree:
             for key in partition.keys():
                 child_data = partition.get(key)
                 children[key] = self._recursive_build(child_data, cur_index)
-            return shnode.SHNode(len(data), children, children_count , cur_index - rand_bits)
+            return shnode.SHNode(len(data), children, children_count, cur_index - rand_bits)
 
     def _split_data(self, data, numbits, cur_index):
         ''' Split the data using LSH '''
